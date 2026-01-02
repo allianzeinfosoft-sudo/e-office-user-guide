@@ -7,6 +7,7 @@ use App\Models\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Str;
 
 class ArticleController extends Controller
 {
@@ -107,15 +108,21 @@ class ArticleController extends Controller
             'isRemoteEnabled' => true,
             'isHtml5ParserEnabled' => true,
         ]);
-
+        $filename = Str::slug($article->title) . '.pdf';
         return Pdf::loadView('articles.pdf', compact('article'))
-            ->stream($article->title . '.pdf');
+            ->stream($filename);
     }
 
 
     public function download(Article $article)
     {
+        Pdf::setOption([
+            'isRemoteEnabled' => true,
+            'isHtml5ParserEnabled' => true,
+        ]);
+        $filename = Str::slug($article->title) . '.pdf';
+        
         $pdf = Pdf::loadView('articles.pdf', compact('article'));
-        return $pdf->download($article->slug . '.pdf');
+        return $pdf->download($filename);
     }
 }
